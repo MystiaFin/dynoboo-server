@@ -22,7 +22,7 @@ A modern point of sale (POS) system built with Express.js, Prisma, and TypeScrip
 2. **Install dependencies**
 
    ```bash
-   npm instal
+   npm install
    ```
 
 3. **Setup the environent variables**
