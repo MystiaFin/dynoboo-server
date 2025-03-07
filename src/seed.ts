@@ -1,9 +1,7 @@
 import { prisma } from "./db";
 import * as bcrypt from "bcrypt";
 
-export default async function seed(): Promise<void> {
-  console.log("Starting seed operation...");
-
+export async function seed(): Promise<void> {
   try {
     const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -11,11 +9,10 @@ export default async function seed(): Promise<void> {
       throw new Error("Admin email not provided in environment variables");
     }
 
-    const adminExist = await prisma.user.findFirst({
+    const adminExist = await prisma.user.count({
       where: { email: adminEmail },
     });
-
-    if (adminExist) {
+    if (adminExist > 0) {
       console.log("Admin user already exists, skipping creation");
       return;
     }
