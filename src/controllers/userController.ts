@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { prisma } from "../server";
+import { prisma } from "../db";
 import bcrypt from "bcrypt";
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {

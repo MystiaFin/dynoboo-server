@@ -26,6 +26,17 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "module-alias": "^2.2.3",
     "prisma": "^6.4.1"
+  },
+  "prisma": {
+    "seed": "ts-node src/seed.ts"
+  },
+  "_moduleAliases": {
+    "@": "./src",
+    "@controllers": "./src/controllers",
+    "@routes": "./src/routes",
+    "@db": "./src/db",
+    "@prisma": "./prisma"
   }
 }
