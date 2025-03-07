@@ -19,5 +19,3 @@ app.use("/api/users", user);
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
-
-// I DID THIS ALL BY MYSELF YAY

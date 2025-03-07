@@ -2,6 +2,12 @@ import { Response, Request } from "express";
 import { prisma } from "../db";
 import bcrypt from "bcrypt";
 
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await prisma.user.findMany({
@@ -16,17 +22,17 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
     });
 
     res.status(200).json(users);
-  } catch (error) {
+  } catch (error: unknown) {
     res.status(500).json({ error: "Failed to retrieve users" });
   }
 };
 
 export const createUser = async (
-  req: Request,
+  req: Request<{}, {}, CreateUserRequest>,
   res: Response
 ): Promise<void> => {
   const { name, email, password } = req.body;
-  const saltRounds = 10;
+  const saltRounds: number = 10;
   const duplicateUser = await prisma.user.findUnique({
     where: {
       email: req.body.email,
