@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { prisma } from "../db";
+import { prisma } from "../../db";
 import bcrypt from "bcrypt";
 
 interface CreateUserRequest {
@@ -8,26 +8,7 @@ interface CreateUserRequest {
   password: string;
 }
 
-export const getUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-        password: false,
-      },
-    });
-
-    res.status(200).json(users);
-  } catch (error: unknown) {
-    res.status(500).json({ error: "Failed to retrieve users" });
-  }
-};
-
-export const createUser = async (
+export const userCreate = async (
   req: Request<{}, {}, CreateUserRequest>,
   res: Response
 ): Promise<void> => {
