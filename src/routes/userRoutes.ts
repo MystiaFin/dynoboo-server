@@ -5,8 +5,8 @@ import { userLogin } from "../controllers/user/userLogin";
 
 const router = Router();
 
-router.get("/users", userGet);
-router.post("/user/register", userCreate);
-router.post("/user/login", userLogin);
+router.get("/", userGet);
+router.post("/register", userCreate);
+router.post("/login", userLogin);
 
 export default router;

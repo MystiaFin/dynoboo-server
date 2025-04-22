@@ -20,7 +20,6 @@ export const userLogin = async (
         email,
       },
       select: {
-        id: true,
         email: true,
         name: true,
         password: true,
@@ -37,7 +36,6 @@ export const userLogin = async (
     if (passwordMatch) {
       const token = jwt.sign(
         {
-          userId: user.id,
           isAdmin: user.isAdmin,
           email: user.email,
         },
@@ -48,13 +46,11 @@ export const userLogin = async (
       );
 
       const { password, ...userWithoutPassword } = user;
-      res
-        .status(200)
-        .json({
-          user: userWithoutPassword,
-          token,
-          message: "Login successful",
-        });
+      res.status(200).json({
+        user: userWithoutPassword,
+        token,
+        message: "Login successful",
+      });
     } else {
       res.status(400).json({ error: "Invalid password" });
     }
