@@ -1,6 +1,4 @@
-# Kasir - Point of Sale System
-
-A modern point of sale (POS) system built with Express.js, Prisma, and TypeScript.
+# Dynoboo Server-side
 
 ## Development
 
