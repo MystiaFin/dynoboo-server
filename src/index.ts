@@ -1,20 +1,22 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import user from "./routes/userRoutes";
+import userRoutes from "./routes/userroutes";
 
 const app = express();
-const port = 3000;
+const port: number = 3000;
 
+// Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: "*" }));
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/", (req: Request, res: Response) => {
+  res.send("hello world!");
 });
 
-app.use("/api/users", user);
+// Routes
+app.use("/api/users", userRoutes);
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Example app listening at http://0.0.0.0:${port}`);
 });

@@ -10,16 +10,22 @@ interface LoginRequest {
 
 export const userLogin = async (
   req: Request<{}, {}, LoginRequest>,
-  res: Response
+  res: Response,
 ): Promise<void> => {
-  const { email, password } = req.body;
-
   try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({ error: "Email and password are required" });
+      return;
+    }
+
     const user = await prisma.user.findUnique({
       where: {
         email,
       },
       select: {
+        id: true,
         email: true,
         name: true,
         password: true,
@@ -28,34 +34,44 @@ export const userLogin = async (
     });
 
     if (!user) {
-      res.status(400).json({ error: "User not found" });
+      res.status(401).json({ error: "Invalid credentials" });
       return;
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
-    if (passwordMatch) {
-      const token = jwt.sign(
-        {
-          isAdmin: user.isAdmin,
-          email: user.email,
-        },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "48h",
-        }
-      );
 
-      const { password, ...userWithoutPassword } = user;
-      res.status(200).json({
-        user: userWithoutPassword,
-        token,
-        message: "Login successful",
-      });
-    } else {
-      res.status(400).json({ error: "Invalid password" });
+    if (!passwordMatch) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
     }
+
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not defined in environment variables");
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        isAdmin: user.isAdmin,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "3d",
+      },
+    );
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.status(200).json({
+      user: userWithoutPassword,
+      token,
+      message: "Login successful",
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Login error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

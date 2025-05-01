@@ -1,43 +1,60 @@
 import { prisma } from "./db";
 import * as bcrypt from "bcrypt";
 
+interface AdminEnvironmentVars {
+  ADMIN_EMAIL: string;
+  ADMIN_NAME?: string;
+  ADMIN_PASSWORD: string;
+}
+
+function getAdminEnvVars(): AdminEnvironmentVars {
+  const { ADMIN_EMAIL, ADMIN_NAME, ADMIN_PASSWORD } = process.env;
+
+  if (!ADMIN_EMAIL) {
+    throw new Error("Admin email not provided in environment variables");
+  }
+
+  if (!ADMIN_PASSWORD) {
+    throw new Error("Admin password not provided in environment variables");
+  }
+
+  return {
+    ADMIN_EMAIL,
+    ADMIN_NAME,
+    ADMIN_PASSWORD,
+  };
+}
+
 export async function seed(): Promise<void> {
   try {
-    const adminEmail = process.env.ADMIN_EMAIL;
+    const { ADMIN_EMAIL, ADMIN_NAME, ADMIN_PASSWORD } = getAdminEnvVars();
 
-    if (!adminEmail) {
-      throw new Error("Admin email not provided in environment variables");
-    }
-
-    const adminExist = await prisma.user.count({
-      where: { email: adminEmail },
+    const adminExists: number = await prisma.user.count({
+      where: { email: ADMIN_EMAIL },
     });
-    if (adminExist > 0) {
+
+    if (adminExists > 0) {
       console.log("Admin user already exists, skipping creation");
       return;
     }
 
-    const adminName = process.env.ADMIN_NAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const hashedPassword: string = await bcrypt.hash(ADMIN_PASSWORD, 10);
 
-    if (!adminPassword) {
-      throw new Error("Admin password not provided in environment variables");
-    }
-
-    const hashedPassword: string = await bcrypt.hash(adminPassword, 10);
-
-    await prisma.user.create({
+    const createdUser = await prisma.user.create({
       data: {
-        name: adminName,
-        email: adminEmail,
+        name: ADMIN_NAME ?? "Admin", // Nullish coalescing operator for default value
+        email: ADMIN_EMAIL,
         isAdmin: true,
         password: hashedPassword,
       },
     });
 
-    console.log(`Admin user created successfully: ${adminEmail}`);
+    console.log(`Admin user created successfully: ${createdUser.email}`);
   } catch (error: unknown) {
-    console.error("Seed operation failed:", error);
+    console.error(
+      "Seed operation failed:",
+      error instanceof Error ? error.message : String(error),
+    );
     throw error;
   }
 }
