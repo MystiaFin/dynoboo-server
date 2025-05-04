@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -8,7 +10,12 @@ const port: number = 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("hello world!");

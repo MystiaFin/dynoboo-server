@@ -1,53 +1,42 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { Jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-interface JwtPayload {
-  userId: number;
-  isAdmin: boolean;
-  email: string;
-}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 declare global {
   namespace Express {
     interface Request {
-      user: JwtPayload;
+      id?: string;
     }
   }
 }
 
-export const authenticate = (
+export const authenticateJWT = (
   req: Request,
   res: Response,
-  next: NextFunction
-) => {
+  next: NextFunction,
+): void => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      res.status(401).json({ error: "Unauthorized" });
+    if (!JWT_SECRET) {
+      res.status(500).json({ error: "JWT secret is not defined." });
       return;
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    ) as JwtPayload;
+    const token =
+      req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
-    req.user = decoded;
+    if (!token) {
+      res.status(401).json({ error: "Access denied. No token provided." });
+      return;
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+
+    req.id = decoded.id;
+
     next();
-  } catch (error) {
-    console.error(error);
-    res.status(401).json({ error: "Unauthorized" });
+  } catch (err) {
+    console.error("Token Verification Error:", err);
+    res.status(403).json({ error: "Invalid or expired token." });
   }
-};
-
-export const requireAdmin = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (!req.user.isAdmin) {
-    res.status(403).json({ error: "Forbidden" });
-    return;
-  }
-  next();
 };

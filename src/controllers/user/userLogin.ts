@@ -22,7 +22,7 @@ export const userLogin = async (
 
     const user = await prisma.user.findUnique({
       where: {
-        email,
+        email: email.toLowerCase(),
       },
       select: {
         id: true,
@@ -32,18 +32,21 @@ export const userLogin = async (
         isAdmin: true,
       },
     });
+    console.log("User found:", user); // Debugging line
 
     if (!user) {
       res.status(401).json({ error: "Invalid credentials" });
       return;
     }
 
+    console.log("User found:", user); // Debugging line
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       res.status(401).json({ error: "Invalid credentials" });
       return;
     }
+    console.log(process.env.JWT_SECRET); // Debugging line
 
     if (!process.env.JWT_SECRET) {
       console.error("JWT_SECRET is not defined in environment variables");
@@ -51,24 +54,22 @@ export const userLogin = async (
       return;
     }
 
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        isAdmin: user.isAdmin,
-        email: user.email,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "3d",
-      },
-    );
+    // important
+    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     const { password: _, ...userWithoutPassword } = user;
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
     res.status(200).json({
       user: userWithoutPassword,
-      token,
       message: "Login successful",
+      token: token,
     });
   } catch (error) {
     console.error("Login error:", error);
