@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRoutes from "./routes/userroutes";
 
@@ -10,6 +11,7 @@ const port: number = 3000;
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(
   cors({
     origin: "http://localhost:5173",

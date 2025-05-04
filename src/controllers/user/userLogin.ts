@@ -54,15 +54,18 @@ export const userLogin = async (
       return;
     }
 
-    // important
-    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" },
+    );
 
     const { password: _, ...userWithoutPassword } = user;
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
