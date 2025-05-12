@@ -2,77 +2,54 @@ import { Request, Response } from "express";
 import { prisma } from "../../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
 
-interface LoginRequest {
-  email: string;
-  password: string;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in environment variables.");
 }
 
-export const userLogin = async (
-  req: Request<{}, {}, LoginRequest>,
-  res: Response,
-): Promise<void> => {
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(3),
+});
+
+export const userLogin = async (req: Request, res: Response): Promise<void> => {
+  const parseResult = loginSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    res.status(400).json({
+      error: "Invalid input",
+      details: parseResult.error.flatten(),
+    });
+    return;
+  }
+
+  const { email, password } = parseResult.data;
+
   try {
-    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!email || !password) {
-      res.status(400).json({ error: "Email and password are required" });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email.toLowerCase(),
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        password: true,
-        isAdmin: true,
-      },
+    const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
+      expiresIn: "7d",
     });
-    console.log("User found:", user); // Debugging line
 
-    if (!user) {
-      res.status(401).json({ error: "Invalid credentials" });
-      return;
-    }
-
-    console.log("User found:", user); // Debugging line
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-      res.status(401).json({ error: "Invalid credentials" });
-      return;
-    }
-    console.log(process.env.JWT_SECRET); // Debugging line
-
-    if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET is not defined in environment variables");
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
-
-    // important
-    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    const { password: _, ...userWithoutPassword } = user;
-
-    res.cookie("token", token, {
+    const { id, name, isAdmin } = user;
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 3 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
     });
-
     res.status(200).json({
-      user: userWithoutPassword,
-      message: "Login successful",
-      token: token,
+      accessToken,
+      user: { id, name, email, isAdmin },
     });
-  } catch (error) {
-    console.error("Login error:", error);
+  } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

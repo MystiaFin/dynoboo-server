@@ -21,17 +21,24 @@ export const userGet = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const userGetMe = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.id;
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        id: Number(req.id),
-      },
+      where: { id: userId },
       select: {
         id: true,
         name: true,
         email: true,
+        isAdmin: true,
         createdAt: true,
         updatedAt: true,
+        password: false,
       },
     });
 

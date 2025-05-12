@@ -25,25 +25,17 @@ export const userCreate = async (
   }
 
   try {
+    const defaultUsername = email.split("@")[0];
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const [newUser, _unverifiedUser] = await prisma.$transaction([
-      prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-        },
-      }),
-      prisma.unverifiedUser.create({
-        data: {
-          email,
-        },
-      }),
-    ]);
-
-    const { password: _, ...userOutput } = newUser;
-    res.status(201).json(userOutput);
+    const user = await prisma.user.create({
+      data: {
+        name: defaultUsername,
+        email,
+        password: hashedPassword,
+      },
+    });
+    res.status(201).json({ user });
   } catch (error) {
     res
       .status(500)

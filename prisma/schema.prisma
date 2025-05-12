@@ -7,23 +7,46 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-        
 
-model user {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  password  String
-  isVerified Boolean  @default(false)
-  isAdmin   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  name       String?
+  password   String
+  isVerified Boolean   @default(false)
+  isAdmin    Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  wishlists  Wishlist[]
 }
 
-model unverifiedUser {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  otp       String?
-  expiresAt DateTime?
-  createdAt DateTime @default(now())
+model Wishlist {
+  id         Int               @id @default(autoincrement())
+  name       String
+  userId     Int
+  user       User              @relation(fields: [userId], references: [id])
+  products   WishlistProduct[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+}
+
+model Product {
+  id         Int               @id @default(autoincrement())
+  name       String
+  description String?
+  image      String?
+  price      Float
+  wishlists  WishlistProduct[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+}
+
+model WishlistProduct {
+  id          Int      @id @default(autoincrement())
+  wishlistId  Int
+  productId   Int
+  wishlist    Wishlist @relation(fields: [wishlistId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@unique([wishlistId, productId]) // prevents duplicate entries
 }
