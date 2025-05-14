@@ -4,11 +4,13 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import userRoutes from "./routes/userroutes";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port: number = 3000;
 
 // Middleware
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(
   cors({

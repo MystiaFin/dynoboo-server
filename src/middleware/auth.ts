@@ -14,14 +14,21 @@ export const authenticateJWT = (
   res: Response,
   next: NextFunction,
 ): void => {
-  const authHeader = req.headers.authorization;
+  // Check both cookie and authorization header
+  let token = req.cookies.accessToken || req.cookies.token; // Cookie name should match what you set
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  // If no cookie, check authorization header
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }
+  }
+
+  if (!token) {
     res.status(401).json({ error: "Token missing or invalid" });
     return;
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
