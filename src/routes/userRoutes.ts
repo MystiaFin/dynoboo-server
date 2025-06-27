@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { userCreate } from "../controllers/user/userCreate";
-import { userLogin } from "../controllers/user/userLogin";
-import { userGet, userGetMe } from "../controllers/user/userGet";
-import { authenticateJWT } from "../middleware/auth";
+import { userCreate } from "@controllers/user/userCreate";
+import { userLogin } from "@controllers/user/userLogin";
+import { userGet, userGetMe } from "@controllers/user/userGet";
+import { authenticateJWT } from "@middlewares/auth";
 
 const router = Router();
 

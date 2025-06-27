@@ -6,13 +6,12 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
+      "@src/*": ["src/*"],
       "@controllers/*": ["src/controllers/*"],
       "@routes/*": ["src/routes/*"],
-      "@db": ["src/db"],
-      "@prisma/*": ["prisma/*"]
+      "@middlewares/*": ["src/middleware/*"],
     }
   }
 }

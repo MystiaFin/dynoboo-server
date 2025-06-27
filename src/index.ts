@@ -1,10 +1,17 @@
+// Essentials
+import "module-alias/register";
 import dotenv from "dotenv";
 dotenv.config();
+
+// Module Imports
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import userRoutes from "./routes/userroutes";
 import cookieParser from "cookie-parser";
+
+// Import Routes
+import userRoutes from "@routes/userRoutes";
+import productRoutes from "@routes/productRoutes";
 
 const app = express();
 const port: number = 3000;
@@ -19,12 +26,13 @@ app.use(
   }),
 );
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.send("hello world!");
 });
 
 // Routes
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/products", productRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://0.0.0.0:${port}`);

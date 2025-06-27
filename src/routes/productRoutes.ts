@@ -1,5 +1,20 @@
 import { Router } from "express";
+import { getAllProducts } from "@controllers/product/getProducts";
+import {
+  uploadProductImages,
+  createProducts,
+} from "@controllers/product/createProducts";
+
+import { authenticateJWTAdmin } from "@middlewares/isAdmin";
 
 const router = Router();
+
+router.get("/get", getAllProducts);
+router.post(
+  "/create",
+  authenticateJWTAdmin,
+  uploadProductImages,
+  createProducts,
+);
 
 export default router;

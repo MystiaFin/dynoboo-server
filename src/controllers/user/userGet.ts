@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
-import { prisma } from "../../db";
+import { prisma } from "@src/db";
 
-export const userGet = async (req: Request, res: Response): Promise<void> => {
+export const userGet = async (_req: Request, res: Response): Promise<void> => {
   try {
     const users = await prisma.user.findMany({
       select: {

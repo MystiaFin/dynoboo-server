@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { prisma } from "../../db";
+import { prisma } from "@src/db";
 import bcrypt from "bcrypt";
 
 interface CreateUserRequest {
@@ -12,7 +12,7 @@ export const userCreate = async (
   req: Request<{}, {}, CreateUserRequest>,
   res: Response,
 ): Promise<void> => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
   const saltRounds: number = 10;
 
   const duplicateUser = await prisma.user.findUnique({
