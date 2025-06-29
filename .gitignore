@@ -37,3 +37,4 @@ pids
 
 # Testing
 /coverage
+.vercel

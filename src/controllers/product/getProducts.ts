@@ -13,8 +13,6 @@ export const getAllProducts = async (
         description: true,
         price: true,
         images: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 

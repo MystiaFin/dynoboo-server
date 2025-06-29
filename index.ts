@@ -1,4 +1,3 @@
-// Essentials
 import "module-alias/register";
 import dotenv from "dotenv";
 dotenv.config();
@@ -34,6 +33,7 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
 
+// Start the server
 app.listen(port, () => {
-  console.log(`Example app listening at http://0.0.0.0:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
