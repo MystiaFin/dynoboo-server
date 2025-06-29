@@ -5,7 +5,7 @@ import {
   createProducts,
 } from "../controllers/product/createProducts";
 
-import { authenticateJWTAdmin } from "@middlewares/isAdmin";
+import { authenticateJWTAdmin } from "../middleware/isAdmin";
 
 const router = Router();
 
