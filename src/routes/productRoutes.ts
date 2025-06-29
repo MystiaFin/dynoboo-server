@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { getAllProducts } from "@controllers/product/getProducts";
+import { getAllProducts } from "../controllers/product/getProducts";
 import {
   uploadProductImages,
   createProducts,
-} from "@controllers/product/createProducts";
+} from "../controllers/product/createProducts";
 
 import { authenticateJWTAdmin } from "@middlewares/isAdmin";
 

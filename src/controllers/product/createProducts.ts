@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "@src/db";
+import { prisma } from "../../db";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import multer from "multer";
