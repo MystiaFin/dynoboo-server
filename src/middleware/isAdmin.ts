@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { prisma } from "../../db";
+import { prisma } from "../db";
 
 declare module "express" {
   export interface Request {
