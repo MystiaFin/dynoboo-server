@@ -44,6 +44,7 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: true,
+      partitioned: true,
     });
     res.status(200).json({
       accessToken,
