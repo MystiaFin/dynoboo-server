@@ -4,11 +4,14 @@ export const userLogout = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const isProd = process.env.NODE_ENV === "production";
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    partitioned: true,
+    ...(isProd && {
+      sameSite: "none",
+      secure: true,
+      partitioned: true,
+    }),
   });
 
   res.status(200).json({
