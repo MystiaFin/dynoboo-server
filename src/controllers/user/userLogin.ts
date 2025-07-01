@@ -42,8 +42,8 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
     const { id, name, isAdmin } = user;
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.COOKIE_SECURE === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
     });
     res.status(200).json({
       accessToken,
