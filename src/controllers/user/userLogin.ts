@@ -40,11 +40,16 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
     });
 
     const { id, name, isAdmin } = user;
+
+    const isProd = process.env.NODE_ENV === "production";
+
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: true,
-      partitioned: true,
+      ...(isProd && {
+        sameSite: "none",
+        secure: true,
+        partitioned: true,
+      }),
     });
     res.status(200).json({
       accessToken,
