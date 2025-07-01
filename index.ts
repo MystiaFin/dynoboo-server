@@ -26,7 +26,7 @@ app.use(
 );
 
 app.get("/", (_req: Request, res: Response) => {
-  res.send("hello world!");
+  res.send("what are you doing here?");
 });
 
 // Routes
