@@ -31,7 +31,7 @@ model Wishlist {
 }
 
 model Product {
-  id          Int               @id @default(autoincrement())
+  id          String            @id @default(cuid())
   name        String
   description String?
   images      Json?
@@ -44,7 +44,7 @@ model Product {
 model WishlistProduct {
   id          Int      @id @default(autoincrement())
   wishlistId  Int
-  productId   Int
+  productId   String
   wishlist    Wishlist @relation(fields: [wishlistId], references: [id])
   product     Product  @relation(fields: [productId], references: [id])
 
