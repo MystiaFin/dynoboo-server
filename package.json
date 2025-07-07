@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon index.ts",
-    "vercel-build": "prisma generate && prisma migrate deploy && npm run build"
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
