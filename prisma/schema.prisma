@@ -18,7 +18,43 @@ model User {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   wishlists  Wishlist[]
+  cart       Cart?
 }
+
+model Product {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  images      Json?
+  price       Decimal
+  cartItems   CartItem[]
+  wishlists   WishlistProduct[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  productId String
+  quantity  Int      @default(1)
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId]) // Prevents duplicate products in the same cart
+}
+
 
 model Wishlist {
   id         Int               @id @default(autoincrement())
@@ -28,17 +64,6 @@ model Wishlist {
   products   WishlistProduct[]
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
-}
-
-model Product {
-  id          String            @id @default(cuid())
-  name        String
-  description String?
-  images      Json?
-  price       Decimal
-  wishlists   WishlistProduct[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
 }
 
 model WishlistProduct {

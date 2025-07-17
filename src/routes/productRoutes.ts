@@ -6,6 +6,8 @@ import {
   createProducts,
 } from "../controllers/product/createProducts";
 
+import { deleteProducts } from "../controllers/product/deleteProducts";
+
 import { authenticateJWTAdmin } from "../middleware/isAdmin";
 
 const router = Router();
@@ -18,5 +20,6 @@ router.post(
   uploadProductImages,
   createProducts,
 );
+router.delete("/delete/:id", authenticateJWTAdmin, deleteProducts);
 
 export default router;
