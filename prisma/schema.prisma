@@ -43,10 +43,11 @@ model Cart {
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   cartId    Int
   productId String
   quantity  Int      @default(1)
+  price     Decimal
   cart      Cart     @relation(fields: [cartId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())

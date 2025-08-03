@@ -11,6 +11,7 @@ import cookieParser from "cookie-parser";
 // Import Routes
 import userRoutes from "./src/routes/userRoutes";
 import productRoutes from "./src/routes/productRoutes";
+import itemRoutes from "./src/routes/itemRoutes";
 
 const app = express();
 const port: number = 3000;
@@ -22,12 +23,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: [
-      ORIGIN_URL,
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "http://192.168.1.4:5173",
-    ],
+    origin: ORIGIN_URL,
     credentials: true,
   }),
 );
@@ -39,6 +35,7 @@ app.get("/", (_req: Request, res: Response) => {
 // Routes
 app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/items", itemRoutes);
 
 // Start the server
 app.listen(port, "0.0.0.0", () => {
