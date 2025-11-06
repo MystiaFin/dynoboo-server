@@ -1,3 +1,4 @@
+# ABANDONED PROJECT FROM INSUFFICIENT FUNDING
 # Dynoboo Server-side
 
 ## Development
